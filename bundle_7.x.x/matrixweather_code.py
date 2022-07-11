@@ -12,12 +12,23 @@ current weather conditions using the MatrixPortal's 32x64 LED display.
 """
 import time
 import board
+import supervisor
 from analogio import AnalogIn
 from digitalio import DigitalInOut, Direction, Pull
 from adafruit_matrixportal.network import Network
 from adafruit_matrixportal.matrix import Matrix
 from simpleio import map_range
 import matrixweather_graphics  # pylint: disable=wrong-import-position
+
+print("running matrixweather_code.py")
+
+# Reduce status neopixel brightness to help keep things cool on error exit
+# TODO: reduce TFT backlight brightness upon exit
+supervisor.set_rgb_status_brightness(16)
+
+# Force a restart upon error exit to keep things alive when the eventual
+#   internet error happens
+supervisor.set_next_code_file(filename="code.py", reload_on_error=True)
 
 
 UNITS = "imperial"  # can pick 'imperial' or 'metric' as part of URL query
