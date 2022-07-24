@@ -33,7 +33,7 @@ supervisor.set_next_code_file(filename="code.py", reload_on_error=True)
 
 UNITS = "imperial"  # can pick 'imperial' or 'metric' as part of URL query
 # Use city, country code in ISO3166 format; e.g. "New York, US" or "London, GB"
-LOCATION = "LosAngeles, CA, US"
+LOCATION = "Seattle, WA, US"
 # display settings
 DISPLAY_BRIGHTNESS = 0.1  # 0.1 minimum; 1.0 maximum
 DISPLAY_GAMMA = 1.0  # No adjustment = 1.0; can range from 0.0 to 2.0
