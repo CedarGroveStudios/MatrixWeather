@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2020 John Park for Adafruit Industries
-# SPDX-FileCopyrightText: 2022-06-30 revision; 2020 JG for Cedar Grove Maker Studios
+# SPDX-FileCopyrightText: 2022-07-23 revision; 2020 JG for Cedar Grove Maker Studios
 #
 # SPDX-License-Identifier: MIT
 #
@@ -12,7 +12,7 @@ from adafruit_display_text.label import Label
 import adafruit_imageload
 from cedargrove_palettefader import PaletteFader
 
-# Color palette for labels
+# Color list for labels
 #LABEL_COLORS_REF = displayio.Palette(4)
 LABEL_COLORS_REF = [
     0xFFFF00,  # yellow; temperature
@@ -253,7 +253,7 @@ class MatrixWeatherGraphics(displayio.Group):
             # Adjust brightness of colors in displayio text group
             self.label_colors.brightness = self._disp_brightness
             for i in range(len(self._text_group)):
-                self._text_group[i].color = self.label_colors.palette[i]
+                self._text_group[i]._palette[1] = self.label_colors.palette[i]
 
             # Adjust the icon palette brightness and refresh it
             self.icon_normal.brightness = self._disp_brightness
