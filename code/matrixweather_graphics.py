@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: 2020 John Park for Adafruit Industries
-# SPDX-FileCopyrightText: 2022-07-23 revision; 2020 JG for Cedar Grove Maker Studios
-#
+# SPDX-FileCopyrightText: 2022-07-24 revision; 2020 JG for Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 #
 # matrixweather_graphics.py
@@ -13,7 +12,6 @@ import adafruit_imageload
 from cedargrove_palettefader import PaletteFader
 
 # Color list for labels
-#LABEL_COLORS_REF = displayio.Palette(4)
 LABEL_COLORS_REF = [
     0xFFFF00,  # yellow; temperature
     0x0066FF,  # blue; description
@@ -68,25 +66,25 @@ class MatrixWeatherGraphics(displayio.Group):
         )
 
         # Load an image and create a modifible palette for brightness control
-        background, bg_palette_ref = adafruit_imageload.load(
+        splash, splash_palette_ref = adafruit_imageload.load(
             "background_sun_clouds.bmp", bitmap=displayio.Bitmap, palette=displayio.Palette
         )
         # Adjust palette colors in proportion to brightness setting
-        bg_normal = PaletteFader(
-            bg_palette_ref, self._disp_brightness, gamma=0.65, normalize=True
+        splash_normal = PaletteFader(
+            splash_palette_ref, self._disp_brightness, gamma=0.65, normalize=True
         )
-        bg_sprite = displayio.TileGrid(background, pixel_shader=bg_normal.palette)
+        splash_sprite = displayio.TileGrid(splash, pixel_shader=splash_normal.palette)
 
-        splash = displayio.Group()
-        splash.append(bg_sprite)
-        display.show(splash)
+        splash_group = displayio.Group()
+        splash_group.append(splash_sprite)
+        display.show(splash_group)
 
-        self.root_group = displayio.Group()
-        self.root_group.append(self)
+        self.primary_group = displayio.Group()
+        self.primary_group.append(self)
         self._icon_group = displayio.Group()
         self.append(self._icon_group)
-        self._text_group = displayio.Group()
-        self.append(self._text_group)
+        self._fg_group = displayio.Group()
+        self.append(self._fg_group)
 
         # Load the icon sprite sheet and create a reference palette for brightness control
         icons, self.icons_ref_palette = adafruit_imageload.load(
@@ -115,25 +113,25 @@ class MatrixWeatherGraphics(displayio.Group):
         self.temperature_text.anchor_point = (0.5, 0.5)
         self.temperature_text.anchored_position = (self._disp_center[0], 4)
         self.temperature_text.color = self.label_colors.palette[0]
-        self._text_group.append(self.temperature_text)
+        self._fg_group.append(self.temperature_text)
 
         self.description_text = Label(DISPLAY_FONT)
         self.description_text.anchor_point = (0.5, 0.5)
         self.description_text.anchored_position = (self.display.width, 55)
         self.description_text.color = self.label_colors.palette[1]
-        self._text_group.append(self.description_text)
+        self._fg_group.append(self.description_text)
 
         self.humidity_text = Label(DISPLAY_FONT)
         self.humidity_text.anchor_point = (0.5, 0.5)
         self.humidity_text.anchored_position = (self._disp_center[0], 45)
         self.humidity_text.color = self.label_colors.palette[2]
-        self._text_group.append(self.humidity_text)
+        self._fg_group.append(self.humidity_text)
 
         self.wind_text = Label(DISPLAY_FONT)
         self.wind_text.anchor_point = (0.5, 0.5)
         self.wind_text.anchored_position = (self._disp_center[0], 34)
         self.wind_text.color = self.label_colors.palette[3]
-        self._text_group.append(self.wind_text)
+        self._fg_group.append(self.wind_text)
 
         # Adjust relative brightness of all display objects
         self.brightness = self._disp_brightness
@@ -209,7 +207,7 @@ class MatrixWeatherGraphics(displayio.Group):
         except:
             self.wind_text.text = "--"
 
-        self.display.show(self.root_group)
+        self.display.show(self.primary_group)
 
     def set_icon(self, icon_name):
         """Use icon_name to get the position of the sprite and update
@@ -252,8 +250,8 @@ class MatrixWeatherGraphics(displayio.Group):
 
             # Adjust brightness of colors in displayio text group
             self.label_colors.brightness = self._disp_brightness
-            for i in range(len(self._text_group)):
-                self._text_group[i]._palette[1] = self.label_colors.palette[i]
+            for i in range(len(self._fg_group)):
+                self._fg_group[i]._palette[1] = self.label_colors.palette[i]
 
             # Adjust the icon palette brightness and refresh it
             self.icon_normal.brightness = self._disp_brightness
