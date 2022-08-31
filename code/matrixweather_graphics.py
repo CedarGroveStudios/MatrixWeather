@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2020 John Park for Adafruit Industries
-# SPDX-FileCopyrightText: 2022-07-24 revision; 2020 JG for Cedar Grove Maker Studios
+# Revised 2022-08-30 JG for Cedar Grove Maker Studios
+#
 # SPDX-License-Identifier: MIT
 #
 # matrixweather_graphics.py

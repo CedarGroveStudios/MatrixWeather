@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2020 John Park for Adafruit Industries
-# Revised 2022-06-24 JG for Cedar Grove Maker Studios
+# Revised 2022-08-30 JG for Cedar Grove Maker Studios
 #
 # SPDX-License-Identifier: MIT
 #
@@ -22,13 +22,17 @@ import matrixweather_graphics  # pylint: disable=wrong-import-position
 
 print("running matrixweather_code.py")
 
+# Instantiate and blank display
+matrix = Matrix(bit_depth=6)  # default is 2; maximum is 6
+matrix.display.brightness = 0
+
 # Reduce status neopixel brightness to help keep things cool on error exit
-# TODO: reduce TFT backlight brightness upon exit
+# TODO: reduce Matrix backlight brightness upon exit
 supervisor.set_rgb_status_brightness(16)
 
 # Force a restart upon error exit to keep things alive when the eventual
 #   internet error happens
-supervisor.set_next_code_file(filename="code.py", reload_on_error=True)
+# supervisor.set_next_code_file(filename="code.py", reload_on_error=True)
 
 
 UNITS = "imperial"  # can pick 'imperial' or 'metric' as part of URL query
@@ -37,7 +41,6 @@ LOCATION = "Seattle, WA, US"
 # display settings
 DISPLAY_BRIGHTNESS = 0.1  # 0.1 minimum; 1.0 maximum
 DISPLAY_GAMMA = 1.0  # No adjustment = 1.0; can range from 0.0 to 2.0
-DISPLAY_BIT_DEPTH = 6  # Default is 2-bits; maximum of 6-bits
 SCROLL_DELAY = 0.1
 SCROLL_HOLD_TIME = 0  # set this to hold each line before finishing scroll
 
@@ -46,7 +49,7 @@ SCROLL_HOLD_TIME = 0  # set this to hold each line before finishing scroll
 try:
     from secrets import secrets
 except ImportError:
-    print("WiFi secrets are kept in secrets.py, please add them there!")
+    print("Error: WiFi secrets are kept in secrets.py")
     raise
 # Set up from where we'll be fetching data
 DATA_SOURCE = (
@@ -68,9 +71,10 @@ button_up.switch_to_input(pull=Pull.UP)
 # instantiate potentiometer
 potentiometer = AnalogIn(board.A0)
 
-# instantiate display
-matrix = Matrix(bit_depth=DISPLAY_BIT_DEPTH)  # default is 2; maximum is 6
+# instantiate network connection
 network = Network(status_neopixel=board.NEOPIXEL, debug=True)
+
+# build display graphics and enable the display
 gfx = matrixweather_graphics.MatrixWeatherGraphics(
     matrix.display,
     am_pm=True,
@@ -78,6 +82,7 @@ gfx = matrixweather_graphics.MatrixWeatherGraphics(
     brightness=DISPLAY_BRIGHTNESS,
     gamma=DISPLAY_GAMMA,
 )
+matrix.display.brightness = 1
 print(f"gfx display loaded:   gfx.brightness = {gfx.brightness}")
 
 localtime_refresh = None
@@ -88,7 +93,7 @@ while True:
     # only query the online time once per hour (and on first run)
     if (not localtime_refresh) or (time.monotonic() - localtime_refresh) > 3600:
         try:
-            print("Getting time from internet!")
+            #print("Getting time from internet!")
             localtime_refresh = time.monotonic()
         except RuntimeError as e:
             print("Some error occured, retrying! -", e)
