@@ -34,6 +34,6 @@ while True and FAILOVER:
     except Exception as e:
         import time
         print(f"matrixweather failover: --{e}--  at time.monotonic: {time.monotonic()}")
-        import matrixweather_failover
+        import matrixportal_failover
 else:
     import matrixweather_code
