@@ -23,7 +23,7 @@ __repo__ = "https://github.com/CedarGroveStudios/MatrixWeather"
 
 """Set FAILOVER to True to fail to a dimmed display and flashing NeoPixel;
 False to fail normally with error reporting via the REPL."""
-FAILOVER = True
+FAILOVER = False
 
 while True and FAILOVER:
     """Attempt to start the primary code module. Upon failure, execute the
