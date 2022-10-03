@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 """
-`cedargrove_palettefader`
+`cedargrove_palettefader_mp`
 ================================================================================
 
 PaletteFader is a CircuitPython driver class for brightness-adjusting color
@@ -15,16 +15,12 @@ color list.
 For adjusting a single color value, create a list containing a single color or
 use cedargrove_unit_converter.color.colorfader.color_fader().
 
-cedargrove_palettefader.py v2.0.1 2022-09-03
+cedargrove_palettefader_mp.py v2.0.1 2022-10-02
 
 * Author(s): JG for Cedar Grove Maker Studios
 
 Implementation Notes
 --------------------
-
-The ulab-based reference palette creation code was adapted from the Adafruit
-Ocean Epoxy Lightbox project's Reshader class; Copyright 2020 J Epler and L Fried.
-<https://learn.adafruit.com/ocean-epoxy-resin-lightbox-with-rgb-led-matrix-image-scroller>
 
 **Hardware:**
 
@@ -35,10 +31,9 @@ Ocean Epoxy Lightbox project's Reshader class; Copyright 2020 J Epler and L Frie
 
 """
 
-"""__version__ = "0.0.0-auto.0" """
+__version__ = "0.0.0+auto.0"
 __repo__ = "https://github.com/CedarGroveStudios/Palette_Fader.git"
 
-from ulab import numpy
 import displayio
 
 
@@ -67,15 +62,17 @@ class PaletteFader:
 
         self._list_transparency = []  # List of transparent items in a color list
 
-        # Create the ulab array reference palette with source palette RGB values
-        self._ref_palette = numpy.zeros((len(self._src_palette), 3), dtype=numpy.uint8)
+        self._ref_palette = []
+        # Create the reference palette list with source palette RGB values
+
         for index, rgb in enumerate(self._src_palette):
             if rgb is not None:
-                self._ref_palette[index, 2] = rgb & 0x0000FF
-                self._ref_palette[index, 1] = (rgb & 0x00FF00) >> 8
-                self._ref_palette[index, 0] = (rgb & 0xFF0000) >> 16
+                b = rgb & 0x0000FF
+                g = (rgb & 0x00FF00) >> 8
+                r = (rgb & 0xFF0000) >> 16
+                self._ref_palette.append([r, g, b])
 
-                if type(self._src_palette) is not list:
+                if not isinstance(self._src_palette, list):
                     # Record palette transparency color index
                     if self._src_palette.is_transparent(index):
                         self._list_transparency.append(index)
@@ -87,12 +84,11 @@ class PaletteFader:
 
         # Find the brightest RGB component for the normalization process
         if self._normalize:
-            self._ref_palette_max = numpy.max(self._ref_palette)
+            self._ref_palette_max = max(max(self._ref_palette))
         else:
             # Set the maximum value to the 8-bit limit (no normalization)
             self._ref_palette_max = 0xFF
         self.fade_normalize()
-
 
     @property
     def brightness(self):
@@ -123,7 +119,6 @@ class PaletteFader:
         """The adjusted displayio palette."""
         return self._new_palette
 
-
     def fade_normalize(self):
         """Create an adjusted displayio palette from the reference palette. Use
         the current brightness, gamma, and normalize parameters to build the
@@ -137,20 +132,18 @@ class PaletteFader:
         # Create a clean new palette
         self._new_palette = displayio.Palette(len(self._src_palette))
 
-        # Adjust for normalization and brightness
-        norm_palette = numpy.array(
-            self._ref_palette * self._norm_factor, dtype=numpy.uint8
-        )
-        # Adjust result for gamma
-        norm_palette = numpy.array(norm_palette**self._gamma, dtype=numpy.uint8)
+        # Adjust for normalization, brightness, and gamma
+        norm_palette = []
+        for index, color in enumerate(self._ref_palette):
+            new_r = int(min((color[0] * self._norm_factor) ** self._gamma, 0xFF))
+            new_g = int(min((color[1] * self._norm_factor) ** self._gamma, 0xFF))
+            new_b = int(min((color[2] * self._norm_factor) ** self._gamma, 0xFF))
+
+            norm_palette.append([new_r, new_g, new_b])
 
         # Build new_palette with the newly adjusted color values
-        for index in range(len(norm_palette)):
-            self._new_palette[index] = (
-                (norm_palette[index, 0] << 16)
-                + (norm_palette[index, 1] << 8)
-                + norm_palette[index, 2]
-                )
+        for index, color in enumerate(norm_palette):
+            self._new_palette[index] = (color[0] << 16) + (color[1] << 8) + color[2]
 
             if index in self._list_transparency:
                 # Set new_palette color index transparency status

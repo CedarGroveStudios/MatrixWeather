@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2020 John Park for Adafruit Industries
-# Revised 2022-10-02 JG for Cedar Grove Maker Studios
+# Revised 2022-10-03 JG for Cedar Grove Maker Studios
 #
 # SPDX-License-Identifier: MIT
 #
@@ -10,7 +10,7 @@ import displayio
 import terminalio
 from adafruit_display_text.label import Label
 import adafruit_imageload
-from cedargrove_palettefader import PaletteFader
+from cedargrove_palettefader.palettefader import PaletteFader
 
 # Color list for labels
 LABEL_COLORS_REF = [
@@ -112,7 +112,7 @@ class MatrixWeatherGraphics(displayio.Group):
         # Define the text labels. Add an attribute for the reference color to each.
         self.temperature_text = Label(DISPLAY_FONT)
         self.temperature_text.anchor_point = (0.5, 0.5)
-        self.temperature_text.anchored_position = (self._disp_center[0], 4)
+        self.temperature_text.anchored_position = (self._disp_center[0], 5)
         self.temperature_text.color = self.label_colors.palette[0]
         self._fg_group.append(self.temperature_text)
 

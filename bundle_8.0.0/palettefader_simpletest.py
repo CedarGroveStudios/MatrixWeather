@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2022-07-24 JG for Cedar Grove Maker Studios
+# SPDX-FileCopyrightText: 2022-09-06 JG for Cedar Grove Maker Studios
 # SPDX-License-Identifier: MIT
 #
 # palettefader_simpletest.py
@@ -12,19 +12,18 @@ the foreground layer brightness over the fixed-brightness background image.
 """
 
 import time
+import random
 import board
 from analogio import AnalogIn
 import displayio
 import vectorio
-import random
 import terminalio
 from simpleio import map_range
 from adafruit_matrixportal.matrix import Matrix
 from adafruit_display_text.label import Label
 from adafruit_display_shapes.rect import Rect
-from adafruit_display_shapes.circle import Circle
 import adafruit_imageload
-from cedargrove_palettefader import PaletteFader
+from cedargrove_palettefader.palettefader import PaletteFader
 
 # fmt: off
 # Define a few colors
@@ -40,7 +39,7 @@ ICON_SPRITE           =  0  # Select a tile from the spritesheet
 
 # Define background graphic object parameters
 BKG_BRIGHTNESS = 0.2   # Initial brightness level
-BKG_GAMMA      = 0.65  # Works nicely for brightness = 0.2
+BKG_GAMMA      = 0.55  # Works nicely for brightness = 0.2
 BKG_IMAGE_FILE = "background.bmp"
 
 # Instantiate fader potentiometer
@@ -111,17 +110,18 @@ sun_palette[0] = YELLOW
 sun = vectorio.Circle(pixel_shader=sun_palette, radius=8, x=30, y=0)
 fg_group.append(sun)
 
+# pylint: disable=protected-access
 # Create foreground group color list from ._palette and .pixel_shader contents
 fg_colors_source = []
-for i in range(len(fg_group)):
-    if hasattr(fg_group[i], "_palette"):
+for i, group_object in enumerate(fg_group):
+    if hasattr(group_object, "_palette"):
         # It's a displayio display_shapes or label object
-        for j in range(len(fg_group[i]._palette)):
-            fg_colors_source.append(fg_group[i]._palette[j])
-    elif hasattr(fg_group[i], "pixel_shader"):
+        for j, color in enumerate(group_object._palette):
+            fg_colors_source.append(color)
+    elif hasattr(group_object, "pixel_shader"):
         # It's a bitmap or vectorio object
-        for j in range(len(fg_group[i].pixel_shader)):
-            fg_colors_source.append(fg_group[i].pixel_shader[j])
+        for j, color in enumerate(group_object.pixel_shader):
+            fg_colors_source.append(color)
 
 primary_group.append(fg_group)
 
@@ -156,15 +156,15 @@ while True:
         # Update foreground group ._palette and .pixel_shader contents
         fg_colors.brightness = DISPLAY_BRIGHTNESS
         fg_colors_index = 0
-        for i in range(len(fg_group)):
+        for i, _ in enumerate(fg_group):
             if hasattr(fg_group[i], "_palette"):
                 # For a displayio display_shapes or label object
-                for j in range(len(fg_group[i]._palette)):
+                for j, _ in enumerate(fg_group[i]._palette):
                     fg_group[i]._palette[j] = fg_colors.palette[fg_colors_index]
                     fg_colors_index += 1
             elif hasattr(fg_group[i], "pixel_shader"):
                 # For a bitmap or vectorio object
-                for j in range(len(fg_group[i].pixel_shader)):
+                for j, _ in enumerate(fg_group[i].pixel_shader):
                     fg_group[i].pixel_shader[j] = fg_colors.palette[fg_colors_index]
                     fg_colors_index += 1
 
