@@ -4,6 +4,7 @@
 secrets = {
     "ssid": "",
     "password": "",
+    "location": "",
     "timezone": "America/Los_Angeles",  # http://worldtimeapi.org/timezones
     "openweather_token": "",
     "github_token": "fawfj23rakjnfawiefa",

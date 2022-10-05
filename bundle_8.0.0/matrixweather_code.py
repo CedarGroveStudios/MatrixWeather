@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2020 John Park for Adafruit Industries
-# Revised 2022-08-30 JG for Cedar Grove Maker Studios
+# Revised 2022-10-04 JG for Cedar Grove Maker Studios
 #
 # SPDX-License-Identifier: MIT
 #
@@ -26,23 +26,9 @@ print("running matrixweather_code.py")
 matrix = Matrix(bit_depth=6)  # default is 2; maximum is 6
 matrix.display.brightness = 0
 
-# Reduce status neopixel brightness to help keep things cool on error exit
+# Reduce status neopixel brightness to help keep things cool
 # TODO: reduce Matrix backlight brightness upon exit
 supervisor.set_rgb_status_brightness(16)
-
-# Force a restart upon error exit to keep things alive when the eventual
-#   internet error happens
-# supervisor.set_next_code_file(filename="code.py", reload_on_error=True)
-
-
-UNITS = "imperial"  # can pick 'imperial' or 'metric' as part of URL query
-# Use city, country code in ISO3166 format; e.g. "New York, US" or "London, GB"
-LOCATION = "Seattle, WA, US"
-# display settings
-DISPLAY_BRIGHTNESS = 0.1  # 0.1 minimum; 1.0 maximum
-DISPLAY_GAMMA = 1.0  # No adjustment = 1.0; can range from 0.0 to 2.0
-SCROLL_DELAY = 0.1
-SCROLL_HOLD_TIME = 0  # set this to hold each line before finishing scroll
 
 # Set up network parameters and instantiate
 #   Get wifi details and more from a secrets.py file
@@ -51,6 +37,16 @@ try:
 except ImportError:
     print("Error: WiFi secrets are kept in secrets.py")
     raise
+
+UNITS = "imperial"  # can pick 'imperial' or 'metric' as part of URL query
+# Use city, country code in ISO3166 format; e.g. "New York, US" or "London, GB"
+LOCATION = secrets["location"]
+# display settings
+DISPLAY_BRIGHTNESS = 0.1  # 0.1 minimum; 1.0 maximum
+DISPLAY_GAMMA = 1.0  # No adjustment = 1.0; can range from 0.0 to 2.0
+SCROLL_DELAY = 0.1
+SCROLL_HOLD_TIME = 0  # set this to hold each line before finishing scroll
+
 # Set up from where we'll be fetching data
 DATA_SOURCE = (
     "http://api.openweathermap.org/data/2.5/weather?q=" + LOCATION + "&units=" + UNITS
@@ -124,6 +120,7 @@ while True:
             gfx.brightness = max(gfx.brightness - 0.01, 0.06)
             print(f"display brightness: {gfx.brightness:0.2f}")
 
+        # uncomment the following block if a potentiometer is used
         """gfx.brightness = map_range(potentiometer.value, 0, 54000, 0.04, 1.0)
         #print(potentiometer.value)
         print(f"display brightness: {gfx.brightness:0.2f}")"""
