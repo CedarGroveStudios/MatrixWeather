@@ -2,13 +2,13 @@
 #
 # SPDX-License-Identifier: MIT
 """
-`matrixportalr_failover.py`
+`matrixportal_failover.py`
 ================================================================================
 
-Used after a fatal error to dim the display to keep the board cooler and flash
-the NeoPixel for attention.
+Used after a fatal error to dim the display to keep the board cooler. Flashes
+L13 (red LED) during a pre-reset delay. Microcontroller is reset after the delay.
 
-matrixportal_failover.py  2022-10-25 v1.1  Cedar Grove Studios
+matrixportal_failover.py  2022-10-25 1.0.1  Cedar Grove Studios
 
 * Author(s): JG for Cedar Grove Maker Studios
 """

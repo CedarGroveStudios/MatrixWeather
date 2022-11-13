@@ -28,7 +28,7 @@ matrix.display.brightness = 0
 
 # Reduce status neopixel brightness to help keep things cool
 # TODO: reduce Matrix backlight brightness upon exit
-supervisor.set_rgb_status_brightness(16)
+#supervisor.set_rgb_status_brightness(16)
 
 # Set up network parameters and instantiate
 #   Get wifi details and more from a secrets.py file
